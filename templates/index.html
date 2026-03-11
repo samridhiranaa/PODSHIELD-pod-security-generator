@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PodShield</title>
+
+<style>
+
+body{
+font-family:"Segoe UI",Arial;
+background:#eef2f7;
+margin:0;
+padding:0;
+}
+
+.container{
+width:900px;
+margin:50px auto;
+}
+
+.header{
+text-align:center;
+margin-bottom:40px;
+}
+
+.header h1{
+font-size:40px;
+color:#1f2d3d;
+margin:0;
+}
+
+.header p{
+color:#6b7c93;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+margin-bottom:30px;
+}
+
+label{
+font-weight:600;
+display:block;
+margin-top:15px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:8px;
+border-radius:6px;
+border:1px solid #d0d7de;
+font-size:15px;
+}
+
+button{
+margin-top:25px;
+padding:14px;
+width:100%;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+.output{
+background:#111827;
+color:#00ff9c;
+padding:20px;
+border-radius:8px;
+font-family:monospace;
+white-space:pre-wrap;
+min-height:200px;
+margin-top:20px;
+}
+
+.footer{
+text-align:center;
+color:#6b7c93;
+font-size:13px;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>🛡 PodShield</h1>
+<p>Kubernetes Pod Security Policy Generator</p>
+</div>
+
+<div class="card">
+
+<label>Container Image</label>
+<input id="image" placeholder="example: nginx">
+
+<label>Security Profile</label>
+<select id="profile">
+<option value="restricted">Restricted (Maximum Security)</option>
+<option value="baseline">Baseline (Moderate Security)</option>
+<option value="privileged">Privileged (Minimal Restrictions)</option>
+</select>
+
+<label>Allow Root Access</label>
+<select id="root">
+<option value="false">No (Recommended)</option>
+<option value="true">Yes</option>
+</select>
+
+<button onclick="generate()">Generate Secure Policy</button>
+
+</div>
+
+<div class="card">
+
+<h3>Generated Kubernetes YAML</h3>
+
+<div class="output" id="output">
+Your generated YAML will appear here...
+</div>
+
+</div>
+
+<div class="footer">
+PodShield • DevOps Security Automation Tool
+</div>
+
+</div>
+
+<script>
+
+async function generate(){
+
+const image=document.getElementById("image").value
+const allow_root=document.getElementById("root").value==="true"
+const profile=document.getElementById("profile").value
+
+if(!image){
+alert("Please enter a container image")
+return
+}
+
+const response=await fetch("/generate",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+image:image,
+allow_root:allow_root,
+profile:profile
+})
+})
+
+const data=await response.text()
+
+document.getElementById("output").textContent=data
+
+}
+
+</script>
+
+</body>
+</html>
