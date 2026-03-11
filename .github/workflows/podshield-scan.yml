@@ -1,0 +1,32 @@
+name: PodShield Security Scan
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  podshield-scan:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run PodShield Policy Generator
+      run: |
+        python generator.py
+
+    - name: Run Security Analyzer
+      run: |
+        python security_analyzer.py
