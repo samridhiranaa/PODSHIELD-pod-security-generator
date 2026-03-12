@@ -1,41 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <title>PodShield</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-
 body{
 font-family:"Segoe UI",Arial;
 background:#eef2f7;
 margin:0;
 padding:0;
 }
-
 .container{
 width:1100px;
 margin:50px auto;
 }
-
 .header{
 text-align:center;
 margin-bottom:40px;
 }
-
 .header h1{
 font-size:40px;
 color:#1f2d3d;
 margin:0;
 }
-
 .header p{
 color:#6b7c93;
 }
-
 .card{
 background:white;
 padding:30px;
@@ -43,13 +34,11 @@ border-radius:10px;
 box-shadow:0 8px 20px rgba(0,0,0,0.08);
 margin-bottom:30px;
 }
-
 label{
 font-weight:600;
 display:block;
 margin-top:15px;
 }
-
 input,select{
 width:100%;
 padding:12px;
@@ -58,7 +47,6 @@ border-radius:6px;
 border:1px solid #d0d7de;
 font-size:15px;
 }
-
 button{
 margin-top:20px;
 padding:14px;
@@ -71,29 +59,23 @@ font-size:16px;
 cursor:pointer;
 transition:0.25s;
 }
-
 button:hover{
 background:#1d4ed8;
 }
-
 .scan-btn{
 background:#059669;
 }
-
 .scan-btn:hover{
 background:#047857;
 }
-
 .tools{
 display:flex;
 gap:20px;
 margin-top:20px;
 }
-
 .tools button{
 width:50%;
 }
-
 .output{
 background:#0f172a;
 color:#d1d5db;
@@ -105,12 +87,10 @@ overflow:auto;
 font-family:monospace;
 line-height:1.6;
 }
-
 .output h2,
 .output h3{
 color:#86efac;
 }
-
 .dashboard{
 display:flex;
 gap:40px;
@@ -118,12 +98,10 @@ margin:30px 0;
 flex-wrap:wrap;
 align-items:center;
 }
-
 .chart-box{
 width:320px;
 height:240px;
 }
-
 .result-card{
 background:#111827;
 border:1px solid #374151;
@@ -133,7 +111,6 @@ border-radius:8px;
 color:#e5e7eb;
 font-size:14px;
 }
-
 .progress-box{
 background:#0b1220;
 color:#d1d5db;
@@ -141,7 +118,6 @@ padding:16px;
 border-radius:8px;
 line-height:1.8;
 }
-
 .bar{
 height:10px;
 background:#1f2937;
@@ -149,118 +125,89 @@ border-radius:6px;
 overflow:hidden;
 margin:10px 0;
 }
-
 .bar-fill{
 height:100%;
 width:0%;
 background:#22c55e;
 transition:width 0.6s ease;
 }
-
 .footer{
 text-align:center;
 color:#6b7c93;
 font-size:13px;
 margin-top:20px;
 }
-
 .score{
 font-size:42px;
 font-weight:700;
 color:#22c55e;
 margin-bottom:10px;
 }
-
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
 <div class="header">
-<h1>🛡 PodShield</h1>
+<h1> PodShield</h1>
 <p>Kubernetes Pod Security Automation Platform</p>
 </div>
-
-
 <div class="card">
-
 <h3>Generate Pod Security Policy</h3>
-
 <label>Container Image</label>
 <input id="image" placeholder="example: nginx">
-
 <label>Security Profile</label>
 <select id="profile">
 <option value="restricted">Restricted (Maximum Security)</option>
 <option value="baseline">Baseline (Moderate Security)</option>
 <option value="privileged">Privileged (Minimal Restrictions)</option>
 </select>
-
 <label>Allow Root Access</label>
 <select id="root">
 <option value="false">No (Recommended)</option>
 <option value="true">Yes</option>
 </select>
-
 <button onclick="generatePolicy()">Generate Secure Policy</button>
-
 </div>
-
-
 <div class="card">
-
 <h3>Security Tools</h3>
-
 <div class="tools">
-
 <button class="scan-btn" onclick="scanCluster()">
 Auto Scan Kubernetes Cluster
 </button>
-
 <button onclick="clearOutput()">
 Clear Output
 </button>
-
 </div>
-
 </div>
-
-
 <div class="card">
-
+<div class="card">
+<h3>Analyze Kubernetes YAML</h3>
+<textarea id="yamlInput" style="
+width:100%;
+height:200px;
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+font-family:monospace;
+" placeholder="Paste Kubernetes YAML here..."></textarea>
+<button onclick="scanYaml()">Analyze YAML Security</button>
+</div>
 <h3>Output</h3>
-
 <div class="output" id="output">
 PodShield ready. Generate a policy or scan a Kubernetes cluster.
 </div>
-
 </div>
-
-
-<div class="footer">
-PodShield • DevSecOps Security Automation Tool
 </div>
-
-</div>
-
-
 <script>
-
 async function generatePolicy(){
-
 const image=document.getElementById("image").value
 const allow_root=document.getElementById("root").value==="true"
 const profile=document.getElementById("profile").value
-
 if(!image){
 alert("Please enter a container image")
 return
 }
-
 document.getElementById("output").innerHTML="Generating secure policy..."
-
 const response=await fetch("/generate",{
 method:"POST",
 headers:{
@@ -272,88 +219,53 @@ allow_root:allow_root,
 profile:profile
 })
 })
-
 const data=await response.text()
-
 document.getElementById("output").innerHTML =
 "<pre style='white-space:pre-wrap;margin:0;color:#86efac'>" + data + "</pre>"
-
 }
-
-
-
 function renderProgress(output){
-
 output.innerHTML = `
 <div class="progress-box">
-
 <div id="step1">Scanning Kubernetes cluster...</div>
-
 <div class="bar">
 <div id="progressFill" class="bar-fill"></div>
 </div>
-
 <div id="step2" style="opacity:0.4">Analyzing pods...</div>
 <div id="step3" style="opacity:0.4">Generating security report...</div>
-
 </div>
 `
-
 }
-
-
-
 async function scanCluster(){
-
 const output=document.getElementById("output")
-
 renderProgress(output)
-
 const progressFill=()=>document.getElementById("progressFill")
 const step2=()=>document.getElementById("step2")
 const step3=()=>document.getElementById("step3")
-
 progressFill().style.width="30%"
-
 await new Promise(r=>setTimeout(r,700))
-
 step2().style.opacity=1
 progressFill().style.width="65%"
-
 await new Promise(r=>setTimeout(r,700))
-
 step3().style.opacity=1
 progressFill().style.width="90%"
-
 const response=await fetch("/scan")
 const data=await response.json()
-
 progressFill().style.width="100%"
-
 await new Promise(r=>setTimeout(r,400))
-
-
 let html=""
-
 html+=`
 <h2>Cluster Security Score</h2>
 <div class="score">${data.score}/100</div>
-
 <div class="dashboard">
-
 <div class="chart-box">
 <canvas id="scoreChart"></canvas>
 </div>
-
 <div class="chart-box">
 <canvas id="riskChart"></canvas>
 </div>
-
 </div>
 `
-
 html+="<h3>Pods Found</h3>"
-
 data.pods.forEach(p=>{
 html+=`<div class="result-card">
 <b>Pod:</b> ${p.pod_name}<br>
@@ -361,15 +273,11 @@ html+=`<div class="result-card">
 <span style="color:#9ca3af">Image:</span> ${p.image}
 </div>`
 })
-
 html+="<h3>Security Issues</h3>"
-
 data.issues.forEach(i=>{
 html+=`<div class="result-card">${i}</div>`
 })
-
 html+="<h3>AI Security Advisor</h3>"
-
 data.advice.forEach(a=>{
 html+=`<div class="result-card">
 <b>Pod:</b> ${a.pod}<br>
@@ -381,20 +289,14 @@ ${a.recommendation.map(r=>`<li>${r}</li>`).join("")}
 </ul>
 </div>`
 })
-
 output.innerHTML=html
-
-
 setTimeout(()=>{
-
 let rootCount=0
 let privilegedCount=0
-
 data.breakdown.forEach(b=>{
 if(b.issue==="Running as root") rootCount++
 if(b.issue==="Privileged container") privilegedCount++
 })
-
 new Chart(document.getElementById("scoreChart"),{
 type:"doughnut",
 data:{
@@ -406,7 +308,6 @@ backgroundColor:["#22c55e","#ef4444"]
 },
 options:{responsive:true,maintainAspectRatio:false}
 })
-
 new Chart(document.getElementById("riskChart"),{
 type:"bar",
 data:{
@@ -422,17 +323,38 @@ plugins:{legend:{display:false}},
 scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}
 }
 })
-
 },100)
-
 }
-
-
 function clearOutput(){
 document.getElementById("output").textContent="Output cleared."
 }
-
+async function scanYaml(){
+const yaml = document.getElementById("yamlInput").value
+if(!yaml){
+alert("Please paste Kubernetes YAML")
+return
+}
+const output=document.getElementById("output")
+output.innerHTML="Analyzing YAML..."
+const response = await fetch("/scan-yaml",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({yaml:yaml})
+})
+const data = await response.json()
+let html="<h2>YAML Security Analysis</h2>"
+html+="<h3>Issues</h3>"
+data.issues.forEach(i=>{
+html+=`<div class="result-card">${i}</div>`
+})
+html+="<h3>Recommended Fixes</h3>"
+data.fixes.forEach(f=>{
+html+=`<div class="result-card">✔ ${f}</div>`
+})
+output.innerHTML=html
+}
 </script>
-
 </body>
 </html>
